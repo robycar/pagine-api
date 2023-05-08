@@ -91,7 +91,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Distributore'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Distributore'
         '400':
           description: bad input parameter
         '404':
