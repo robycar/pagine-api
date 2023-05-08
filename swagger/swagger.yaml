@@ -1,0 +1,374 @@
+openapi: 3.0.0
+info:
+  title: Pagine API
+  description: API per i servizi dedicati per la libreria
+  contact:
+    email: roby@libreriapagine.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/robycar/pagine/1.0.0
+  description: SwaggerHub API Auto Mocking
+security:
+- jwt: []
+tags:
+- name: distributore
+  description: CRUD per i distributori
+paths:
+  /api/distributore:
+    get:
+      tags:
+      - distributore
+      summary: Recupera tutti i distributori
+      description: "Recupera tutti i distributori presenti nel sistema, eventualmente\
+        \ utilizzando la paginazione"
+      operationId: findAllDistributore
+      parameters:
+      - name: page
+        in: query
+        description: Numero di pagina nella paginazione
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          nullable: false
+      - name: size
+        in: query
+        description: Numero di record per pagina
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 50
+          minimum: 1
+          type: integer
+          nullable: false
+      responses:
+        "200":
+          description: elenco distributori
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Distributore'
+        "400":
+          description: "invalid input, object invalid"
+    post:
+      tags:
+      - distributore
+      summary: Aggiunge un distributore nel sistema
+      description: Aggiunge un nuovo distributore nel sistema
+      operationId: addDistributore
+      requestBody:
+        description: Inventory item to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributoreNoId'
+      responses:
+        "201":
+          description: item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Distributore'
+        "400":
+          description: "invalid input, object invalid"
+        "404":
+          description: uno o più riferimenti non sono presenti nel sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        "409":
+          description: Un editore con lo stesso nome esistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+  /api/distributore/{id}:
+    get:
+      tags:
+      - distributore
+      summary: Cerca per identificatore
+      description: |
+        Recupera i dati di un distributore  a partire dal suo identificatore
+      operationId: findById
+      parameters:
+      - name: id
+        in: path
+        description: L'identificatore del distributore
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: I dati del distributore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Distributore'
+        "400":
+          description: bad input parameter
+        "404":
+          description: distributore non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+    put:
+      tags:
+      - distributore
+      summary: Modifica un distributore
+      description: Modifica un distributore presente nel sistema
+      operationId: editDistributore
+      parameters:
+      - name: id
+        in: path
+        description: L'identificatore del distributore
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: I dati del distributore modificato
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributoreNoId'
+        required: true
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Distributore'
+        "400":
+          description: bad input parameter
+        "404":
+          description: "distributore, o uno dei suoi riferimenti, non trovato"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        "409":
+          description: "In caso di modifica del nome, un distributore con lo stesso\
+            \ nome esistente."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+    delete:
+      tags:
+      - distributore
+      summary: Elimina un distributore
+      description: Elimina un distributore presente nel sistema
+      operationId: deleteDistributore
+      parameters:
+      - name: id
+        in: path
+        description: L'identificatore del distributore
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Distributore non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        "400":
+          description: "input non valido, o distributore non eliminabile"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+components:
+  schemas:
+    Recapito:
+      required:
+      - contatto
+      - tipo
+      type: object
+      properties:
+        tipo:
+          type: string
+          description: |
+            Tipologia del recapito. Determina il tipo di valore del campo recapito. Alcuni valori sono standard com ad esempio: * `tel` - Recapito telefonico * `fax` - Numero di fax * `email` - Indirizzo email * `web` - URL/indirizzo web
+          example: tel
+        contatto:
+          type: string
+          description: Valore del contatto. Determinato dal campo tipo
+          example: "0693847563"
+        etichette:
+          type: array
+          description: lista di stringhe a discrezione dell'utente per affinare la
+            ricerca
+          example:
+          - ordini
+          - rappresentante
+          items:
+            type: string
+        riferimento:
+          type: string
+          description: Specifica la natura del contatto. Ad esempio puo' indidicare
+            a chi appartiente il numero di telefono o l'email
+          example: Servizio clienti
+      description: "Dati relativi ad un recapito. Puo' essere un telefono, una email,\
+        \ etc."
+    DistributoreNoId:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome del distributore. Deve essere univoco.
+          example: Lazio distributozione
+        indirizzo:
+          $ref: '#/components/schemas/Indirizzo'
+        web:
+          type: string
+          description: Indirizzo web
+          example: https://www.mondadori.it
+        recapiti:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recapito'
+        editori:
+          type: array
+          items:
+            $ref: '#/components/schemas/Editore'
+    Distributore:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      allOf:
+      - $ref: '#/components/schemas/DistributoreNoId'
+    Editore:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        nome:
+          maxLength: 40
+          type: string
+          description: Nome dell'editore. Deve essere univoco.
+          example: Mondadori
+        indirizzo:
+          maxLength: 80
+          type: string
+          description: Indirizzo dell'editore
+          example: "Via Roma, 53"
+        cap:
+          maxLength: 5
+          type: string
+          description: Codice avviamo postale dell'indirizzo del distributore
+          example: "83"
+        citta:
+          maxLength: 40
+          type: string
+          description: Città dell'indirizzo del distributore.
+          example: Roma
+        tel1:
+          maxLength: 13
+          type: string
+          description: Recapito telefonico primario
+          example: "0636455273"
+        tel2:
+          maxLength: 13
+          type: string
+          description: Recapito telefonico secondario
+          example: "0636455222"
+        fax1:
+          maxLength: 13
+          type: string
+          description: FAX primario
+          example: "108681915"
+        fax2:
+          maxLength: 13
+          type: string
+          description: FAX alternativo
+          example: "108681874"
+        email1:
+          maxLength: 80
+          type: string
+          description: Email principale
+          example: ordini@laziodistribuzione.it
+        email2:
+          maxLength: 80
+          type: string
+          description: Email alternativa
+        url:
+          maxLength: 80
+          type: string
+          description: Indirizzo web
+          example: https://www.laziodistribuzione.it
+    Indirizzo:
+      type: object
+      properties:
+        citta:
+          type: string
+          example: Roma
+        cap:
+          maxLength: 5
+          minLength: 5
+          type: string
+          example: "83"
+        indirizzo:
+          type: string
+          example: "Via Flaminia, 128"
+    ErrorDTO:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codice dell'errore
+          example: PAG-0001
+        message:
+          type: string
+          description: Messaggio di errore
+          example: Operazione non ammessa
+      description: Errore applicativo
+  parameters:
+    pageNumberParam:
+      name: page
+      in: query
+      description: Numero di pagina nella paginazione
+      required: false
+      style: form
+      explode: true
+      schema:
+        minimum: 0
+        type: integer
+        nullable: false
+    pageSizeParam:
+      name: size
+      in: query
+      description: Numero di record per pagina
+      required: false
+      style: form
+      explode: true
+      schema:
+        maximum: 50
+        minimum: 1
+        type: integer
+        nullable: false
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
