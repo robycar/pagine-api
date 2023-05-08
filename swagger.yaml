@@ -250,12 +250,12 @@ components:
             $ref: '#/components/schemas/Editore'
     Distributore:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/DistributoreNoId'
       properties:
         id:
           type: string
           format: uuid
+      allOf:
+        - $ref: '#/components/schemas/DistributoreNoId'
     Editore:
       type: object
       properties:
