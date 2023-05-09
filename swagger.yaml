@@ -39,7 +39,9 @@ paths:
                   - $ref: '#/components/schemas/Page'
                 properties:
                   content:
-                    $ref: '#/components/schemas/Distributore'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Distributore'
         '400':
           description: invalid input, object invalid
     post:
@@ -382,7 +384,7 @@ components:
           type: boolean
           description: if there is a next page
 
-      description: definizione di una pagina di dati, comprendente il numero di pagina ed il numero di record esistenti
+      description: A page is a sublist of a list of objects. It allows gain information about the position of it in the containingentire list
   securitySchemes:
     jwt:
       type: http
