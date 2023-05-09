@@ -840,6 +840,74 @@
     }
   }
 };
+            defs["inline_response_200"] = {
+  "type" : "object",
+  "properties" : {
+    "content" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Distributore"
+      }
+    }
+  },
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/Page"
+  } ]
+};
+            defs["inline_response_200_1"] = {
+  "type" : "object",
+  "properties" : {
+    "data" : {
+      "$ref" : "#/components/schemas/Distributore"
+    }
+  }
+};
+            defs["Page"] = {
+  "type" : "object",
+  "properties" : {
+    "content" : {
+      "type" : "array",
+      "description" : "the page content as list",
+      "items" : {
+        "type" : "object"
+      }
+    },
+    "number" : {
+      "type" : "integer",
+      "description" : "the number of the current page",
+      "format" : "int32"
+    },
+    "numberOfElements" : {
+      "type" : "integer",
+      "description" : "the number of elements currently on this page",
+      "format" : "int32"
+    },
+    "size" : {
+      "type" : "integer",
+      "description" : "the size of the page",
+      "format" : "int32"
+    },
+    "totalPages" : {
+      "type" : "integer",
+      "description" : "the number of total pages",
+      "format" : "int32"
+    },
+    "totalElements" : {
+      "type" : "integer",
+      "description" : "the total amount of elements",
+      "format" : "int64"
+    },
+    "first" : {
+      "type" : "boolean",
+      "description" : "whether the current page is the first one"
+    },
+    "last" : {
+      "type" : "boolean",
+      "description" : "if there is a next page"
+    }
+  },
+  "description" : "A page is a sublist of a list of objects. It allows gain information about the position of it in the containingentire list"
+};
             defs["Recapito"] = {
   "required" : [ "contatto", "tipo" ],
   "type" : "object",
@@ -2222,7 +2290,7 @@ public class DistributoreApiExample {
         Integer page = 56; // Integer | Numero di pagina nella paginazione
         Integer size = 56; // Integer | Numero di record per pagina
         try {
-            Distributore result = apiInstance.findAllDistributore(page, size);
+            inline_response_200 result = apiInstance.findAllDistributore(page, size);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findAllDistributore");
@@ -2242,7 +2310,7 @@ public class DistributoreApiExample {
         Integer page = 56; // Integer | Numero di pagina nella paginazione
         Integer size = 56; // Integer | Numero di record per pagina
         try {
-            Distributore result = apiInstance.findAllDistributore(page, size);
+            inline_response_200 result = apiInstance.findAllDistributore(page, size);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findAllDistributore");
@@ -2265,7 +2333,7 @@ DistributoreApi *apiInstance = [[DistributoreApi alloc] init];
 // Recupera tutti i distributori
 [apiInstance findAllDistributoreWith:page
     size:size
-              completionHandler: ^(Distributore output, NSError* error) {
+              completionHandler: ^(inline_response_200 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -2322,7 +2390,7 @@ namespace Example
             try
             {
                 // Recupera tutti i distributori
-                Distributore result = apiInstance.findAllDistributore(page, size);
+                inline_response_200 result = apiInstance.findAllDistributore(page, size);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2466,7 +2534,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/Distributore"
+        "$ref" : "#/components/schemas/inline_response_200"
       }
     }
   }
@@ -2562,7 +2630,7 @@ public class DistributoreApiExample {
         DistributoreApi apiInstance = new DistributoreApi();
         String id = id_example; // String | L'identificatore del distributore
         try {
-            Distributore result = apiInstance.findById(id);
+            inline_response_200_1 result = apiInstance.findById(id);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findById");
@@ -2581,7 +2649,7 @@ public class DistributoreApiExample {
         DistributoreApi apiInstance = new DistributoreApi();
         String id = id_example; // String | L'identificatore del distributore
         try {
-            Distributore result = apiInstance.findById(id);
+            inline_response_200_1 result = apiInstance.findById(id);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findById");
@@ -2602,7 +2670,7 @@ DistributoreApi *apiInstance = [[DistributoreApi alloc] init];
 
 // Cerca per identificatore
 [apiInstance findByIdWith:id
-              completionHandler: ^(Distributore output, NSError* error) {
+              completionHandler: ^(inline_response_200_1 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -2656,7 +2724,7 @@ namespace Example
             try
             {
                 // Cerca per identificatore
-                Distributore result = apiInstance.findById(id);
+                inline_response_200_1 result = apiInstance.findById(id);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2781,7 +2849,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/Distributore"
+        "$ref" : "#/components/schemas/inline_response_200_1"
       }
     }
   }
