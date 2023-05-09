@@ -28,6 +28,8 @@ paths:
       parameters: 
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
       responses:
         '200':
           description: elenco distributori
@@ -201,6 +203,30 @@ components:
         minimum: 1
         maximum: 50
       description: Numero di record per pagina
+    filterParam:
+      in: query
+      name: filter
+      required: false
+      description: Generico filtro, da applicare nel recupero di una lista di oggetti
+      schema:
+        type: string
+        nullable: false
+    sortParam:
+      in: query
+      name: sort
+      description: | 
+        Nome e direzione del campo per cui ordinare.
+        Di default l'ordinamento è ascendente.
+        Esempi:
+          * campo
+          * campo,asc
+          * campo,desc
+      schema:
+        type: string
+        nullable: false
+        example: nome,asc
+      
+      
   schemas:
     Recapito:
       type: object
