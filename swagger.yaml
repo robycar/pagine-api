@@ -35,11 +35,11 @@ paths:
             application/json:
               schema:
                 type: object
+                allOf:
+                  - $ref: '#/components/schemas/Page'
                 properties:
                   content:
                     $ref: '#/components/schemas/Distributore'
-                  page:
-                    $ref: '#/components/schemas/Recapito'
         '400':
           description: invalid input, object invalid
     post:
