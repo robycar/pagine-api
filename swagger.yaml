@@ -34,7 +34,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Distributore'
+                type: object
+                properties:
+                  content:
+                    $ref: '#/components/schemas/Distributore'
+                  page:
+                    $ref: '#/components/schemas/Recapito'
         '400':
           description: invalid input, object invalid
     post:
@@ -342,6 +347,42 @@ components:
           type: string
           description: Messaggio di errore
           example: Operazione non ammessa
+    Page:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+          description: the page content as list
+        number:
+          type: integer
+          format: int32
+          description: the number of the current page
+        numberOfElements:
+          type: integer
+          format: int32
+          description: the number of elements currently on this page
+        size:
+          type: integer
+          format: int32
+          description: the size of the page
+        totalPages:
+          type: integer
+          format: int32
+          description: the number of total pages
+        totalElements:
+          type: integer
+          format: int64
+          description: the total amount of elements
+        first:
+          type: boolean
+          description: whether the current page is the first one
+        last:
+          type: boolean
+          description: if there is a next page
+
+      description: definizione di una pagina di dati, comprendente il numero di pagina ed il numero di record esistenti
   securitySchemes:
     jwt:
       type: http
