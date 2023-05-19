@@ -689,12 +689,40 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+            defs["Contatto"] = {
+  "required" : [ "tipo", "valore" ],
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "integer",
+      "description" : "Identificatore del contatto",
+      "format" : "int32",
+      "example" : 1
+    },
+    "tipo" : {
+      "type" : "string",
+      "description" : "Tipologia del recapito. Determina il tipo di valore del campo recapito. Alcuni valori sono standard com ad esempio: * `tel` - Recapito telefonico * `fax` - Numero di fax * `email` - Indirizzo email * `web` - URL/indirizzo web\n",
+      "example" : "tel"
+    },
+    "valore" : {
+      "type" : "string",
+      "description" : "Valore del contatto. Determinato dal campo tipo",
+      "example" : "0693847563"
+    },
+    "note" : {
+      "type" : "string",
+      "description" : "Specifica la natura del contatto. Ad esempio puo' indidicare a chi appartiente il numero di telefono o l'email",
+      "example" : "Servizio clienti"
+    }
+  },
+  "description" : "Dati relativi ad un contatto. Puo' essere un telefono, una email, etc."
+};
             defs["Distributore"] = {
   "type" : "object",
   "properties" : {
     "id" : {
-      "type" : "string",
-      "format" : "uuid"
+      "type" : "integer",
+      "format" : "int32"
     }
   },
   "allOf" : [ {
@@ -707,20 +735,31 @@
     "nome" : {
       "type" : "string",
       "description" : "Nome del distributore. Deve essere univoco.",
-      "example" : "Lazio distributozione"
+      "example" : "Lazio distribuzione"
     },
     "indirizzo" : {
-      "$ref" : "#/components/schemas/Indirizzo"
+      "type" : "string",
+      "example" : "Via Cincianpai, 52"
+    },
+    "cap" : {
+      "type" : "string",
+      "description" : "Il codice di avviamento postale del distributore",
+      "format" : "[0-9]{5}"
+    },
+    "citta" : {
+      "type" : "string",
+      "description" : "La citta' della sede del distributore",
+      "example" : "Roma"
     },
     "web" : {
       "type" : "string",
       "description" : "Indirizzo web",
       "example" : "https://www.mondadori.it"
     },
-    "recapiti" : {
+    "contatti" : {
       "type" : "array",
       "items" : {
-        "$ref" : "#/components/schemas/Recapito"
+        "$ref" : "#/components/schemas/Contatto"
       }
     },
     "editori" : {
@@ -821,25 +860,6 @@
   },
   "description" : "Errore applicativo"
 };
-            defs["Indirizzo"] = {
-  "type" : "object",
-  "properties" : {
-    "citta" : {
-      "type" : "string",
-      "example" : "Roma"
-    },
-    "cap" : {
-      "maxLength" : 5,
-      "minLength" : 5,
-      "type" : "string",
-      "example" : "83"
-    },
-    "indirizzo" : {
-      "type" : "string",
-      "example" : "Via Flaminia, 128"
-    }
-  }
-};
             defs["inline_response_200"] = {
   "type" : "object",
   "properties" : {
@@ -907,36 +927,6 @@
     }
   },
   "description" : "A page is a sublist of a list of objects. It allows gain information about the position of it in the containingentire list"
-};
-            defs["Recapito"] = {
-  "required" : [ "contatto", "tipo" ],
-  "type" : "object",
-  "properties" : {
-    "tipo" : {
-      "type" : "string",
-      "description" : "Tipologia del recapito. Determina il tipo di valore del campo recapito. Alcuni valori sono standard com ad esempio: * `tel` - Recapito telefonico * `fax` - Numero di fax * `email` - Indirizzo email * `web` - URL/indirizzo web\n",
-      "example" : "tel"
-    },
-    "contatto" : {
-      "type" : "string",
-      "description" : "Valore del contatto. Determinato dal campo tipo",
-      "example" : "0693847563"
-    },
-    "etichette" : {
-      "type" : "array",
-      "description" : "lista di stringhe a discrezione dell'utente per affinare la ricerca",
-      "example" : [ "ordini", "rappresentante" ],
-      "items" : {
-        "type" : "string"
-      }
-    },
-    "riferimento" : {
-      "type" : "string",
-      "description" : "Specifica la natura del contatto. Ad esempio puo' indidicare a chi appartiente il numero di telefono o l'email",
-      "example" : "Servizio clienti"
-    }
-  },
-  "description" : "Dati relativi ad un recapito. Puo' essere un telefono, una email, etc."
 };
   </script>
 
@@ -2269,7 +2259,7 @@ except ApiException as e:
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
  -H "Authorization: Bearer [[accessToken]]"\
 -H "Accept: application/json"\
-"https://virtserver.swaggerhub.com/robycar/pagine/1.0.0/api/distributore?page=&size="</code></pre>
+"https://virtserver.swaggerhub.com/robycar/pagine/1.0.0/api/distributore?page=&size=&sort=&filter="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Distributore-findAllDistributore-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2289,8 +2279,16 @@ public class DistributoreApiExample {
         DistributoreApi apiInstance = new DistributoreApi();
         Integer page = 56; // Integer | Numero di pagina nella paginazione
         Integer size = 56; // Integer | Numero di record per pagina
+        String sort = sort_example; // String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+        String filter = filter_example; // String | Generico filtro, da applicare nel recupero di una lista di oggetti
         try {
-            inline_response_200 result = apiInstance.findAllDistributore(page, size);
+            inline_response_200 result = apiInstance.findAllDistributore(page, size, sort, filter);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findAllDistributore");
@@ -2309,8 +2307,16 @@ public class DistributoreApiExample {
         DistributoreApi apiInstance = new DistributoreApi();
         Integer page = 56; // Integer | Numero di pagina nella paginazione
         Integer size = 56; // Integer | Numero di record per pagina
+        String sort = sort_example; // String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+        String filter = filter_example; // String | Generico filtro, da applicare nel recupero di una lista di oggetti
         try {
-            inline_response_200 result = apiInstance.findAllDistributore(page, size);
+            inline_response_200 result = apiInstance.findAllDistributore(page, size, sort, filter);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DistributoreApi#findAllDistributore");
@@ -2327,12 +2333,22 @@ public class DistributoreApiExample {
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
 Integer *page = 56; // Numero di pagina nella paginazione (optional)
 Integer *size = 56; // Numero di record per pagina (optional)
+String *sort = sort_example; // Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+ (optional)
+String *filter = filter_example; // Generico filtro, da applicare nel recupero di una lista di oggetti (optional)
 
 DistributoreApi *apiInstance = [[DistributoreApi alloc] init];
 
 // Recupera tutti i distributori
 [apiInstance findAllDistributoreWith:page
     size:size
+    sort:sort
+    filter:filter
               completionHandler: ^(inline_response_200 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -2352,7 +2368,15 @@ var defaultClient = PagineApi.ApiClient.instance;
 var api = new PagineApi.DistributoreApi()
 var opts = { 
   'page': 56, // {{Integer}} Numero di pagina nella paginazione
-  'size': 56 // {{Integer}} Numero di record per pagina
+  'size': 56, // {{Integer}} Numero di record per pagina
+  'sort': sort_example, // {{String}} Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+  'filter': filter_example // {{String}} Generico filtro, da applicare nel recupero di una lista di oggetti
 };
 var callback = function(error, data, response) {
   if (error) {
@@ -2386,11 +2410,19 @@ namespace Example
             var apiInstance = new DistributoreApi();
             var page = 56;  // Integer | Numero di pagina nella paginazione (optional) 
             var size = 56;  // Integer | Numero di record per pagina (optional) 
+            var sort = sort_example;  // String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+ (optional) 
+            var filter = filter_example;  // String | Generico filtro, da applicare nel recupero di una lista di oggetti (optional) 
 
             try
             {
                 // Recupera tutti i distributori
-                inline_response_200 result = apiInstance.findAllDistributore(page, size);
+                inline_response_200 result = apiInstance.findAllDistributore(page, size, sort, filter);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2411,9 +2443,17 @@ require_once(__DIR__ . '/vendor/autoload.php');
 $api_instance = new Swagger\Client\ApiDistributoreApi();
 $page = 56; // Integer | Numero di pagina nella paginazione
 $size = 56; // Integer | Numero di record per pagina
+$sort = sort_example; // String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+$filter = filter_example; // String | Generico filtro, da applicare nel recupero di una lista di oggetti
 
 try {
-    $result = $api_instance->findAllDistributore($page, $size);
+    $result = $api_instance->findAllDistributore($page, $size, $sort, $filter);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling DistributoreApi->findAllDistributore: ', $e->getMessage(), PHP_EOL;
@@ -2430,9 +2470,17 @@ use WWW::SwaggerClient::DistributoreApi;
 my $api_instance = WWW::SwaggerClient::DistributoreApi->new();
 my $page = 56; # Integer | Numero di pagina nella paginazione
 my $size = 56; # Integer | Numero di record per pagina
+my $sort = sort_example; # String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+my $filter = filter_example; # String | Generico filtro, da applicare nel recupero di una lista di oggetti
 
 eval { 
-    my $result = $api_instance->findAllDistributore(page => $page, size => $size);
+    my $result = $api_instance->findAllDistributore(page => $page, size => $size, sort => $sort, filter => $filter);
     print Dumper($result);
 };
 if ($@) {
@@ -2452,10 +2500,18 @@ from pprint import pprint
 api_instance = swagger_client.DistributoreApi()
 page = 56 # Integer | Numero di pagina nella paginazione (optional)
 size = 56 # Integer | Numero di record per pagina (optional)
+sort = sort_example # String | Nome e direzione del campo per cui ordinare.
+Di default l'ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+ (optional)
+filter = filter_example # String | Generico filtro, da applicare nel recupero di una lista di oggetti (optional)
 
 try: 
     # Recupera tutti i distributori
-    api_response = api_instance.find_all_distributore(page=page, size=size)
+    api_response = api_instance.find_all_distributore(page=page, size=size, sort=sort, filter=filter)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DistributoreApi->findAllDistributore: %s\n" % e)</code></pre>
@@ -2506,6 +2562,50 @@ except ApiException as e:
                                 
                                                     <div class="inner description">
                                                         Numero di record per pagina
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">sort</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAllDistributore_sort">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        Nome e direzione del campo per cui ordinare.
+Di default l&#x27;ordinamento è ascendente.
+Esempi:
+  * campo
+  * campo,asc
+  * campo,desc
+
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">filter</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAllDistributore_filter">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        Generico filtro, da applicare nel recupero di una lista di oggetti
                                                     </div>
                                             </div>
                                         </div>
